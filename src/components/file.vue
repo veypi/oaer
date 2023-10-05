@@ -36,8 +36,9 @@ withDefaults(defineProps<{
 
 let client = createClient(Cfg.userFileUrl(),
     { headers: { auth_token: Cfg.token.value as string } })
+
 onMounted(() => {
-    client.stat('').then((e: any) => {
+    client.stat('/').then((e: any) => {
         console.log(e)
     }).catch((e: any) => {
         console.log(e)

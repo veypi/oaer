@@ -5,10 +5,9 @@
             <span @click="Cfg.goto('/')" class="cursor-pointer" style="color:#f36828">应用中心</span>
         </div>
         <div class="grid grid-cols-5">
-            <template v-for="(ap) of apps" :key="ai">
-                <div class="mx-2" @click="Cfg.goto(ap.redirect)" v-if="ap.id !== Cfg.uuid.value">
-                    <img class="oa_avator" v-if="ap.icon" :src="Cfg.host.value +
-                        ap.icon" alt="Avatar" />
+            <template v-for="(ap ) of apps">
+                <div class="mx-2" @click="Cfg.goto(ap.redirect || '')" v-if="ap.id !== Cfg.uuid.value">
+                    <Avatar :src="ap.icon" />
                 </div>
             </template>
         </div>
@@ -18,6 +17,7 @@
 <script lang="ts" setup>
 import { modelsApp } from '../models'
 import { Cfg } from '../api'
+import Avatar from './avatar.vue'
 
 withDefaults(defineProps<{
     apps: modelsApp[]

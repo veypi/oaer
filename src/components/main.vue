@@ -4,7 +4,7 @@
             {{ self.name }}
         </template>
         <div class="flex justify-center items-center">
-            <img class="oa_avatar mx-2" :src="Cfg.host.value + usr.icon" alt="Avatar" />
+            <Avatar :src="usr.icon" />
         </div>
         <template #main>
             <div style="height: 100%">
@@ -16,7 +16,7 @@
                         </div>
                         <div class="grid grid-cols-4 gap-4 h-20">
                             <div class="flex items-center justify-center">
-                                <img class="oa_avatar mx-2" :src="Cfg.host.value + usr.icon" alt="Avatar" />
+                                <Avatar :src="usr.icon" />
                             </div>
                             <div class="col-span-2 text-xs grid grid-cols-1 items-center text-left" style="">
                                 <span>昵称: &ensp;&ensp; {{ usr.nickname }}</span>
@@ -54,7 +54,8 @@ import { OneIcon } from '@veypi/one-icon'
 import { computed, onMounted, ref, watch } from 'vue'
 import { decode } from 'js-base64'
 import { api, Cfg } from '../api'
-import { modelsApp, modelsUser } from '../models'
+import { AUStatus, modelsApp, modelsUser } from '../models'
+import Avatar from './avatar.vue'
 
 let shown = ref(false)
 let emits = defineEmits<{
@@ -85,20 +86,20 @@ function fetchUserData() {
         return false
     }
     let data = JSON.parse(decode(token[1]))
-    console.log(data)
     if (data.id) {
         api.user.get(data.id).then(e => {
-            console.log(e)
             usr.value = e
             ofApps.value = []
-            for (let v of e.Apps) {
-                if (v.Status === 'ok') {
-                    ofApps.value.push(v.App)
+            api.app.user('-').list(e.id).then((apps: modelsApp[]) => {
+                for (let v of apps) {
+                    if (v.status === AUStatus.OK) {
+                        ofApps.value.push(v)
+                    }
+                    if (v.id === Cfg.uuid.value) {
+                        self.value = v
+                    }
                 }
-                if (v.App.id === Cfg.uuid.value) {
-                    self.value = v.App
-                }
-            }
+            })
             emits('load', e)
         }).catch(e => {
             console.log(e)
@@ -110,6 +111,7 @@ function fetchUserData() {
 }
 
 const logout = () => {
+    shown.value = false
     emits('logout')
 }
 
@@ -124,12 +126,5 @@ const logout = () => {
 .oa_dark {
     color: #333;
 
-}
-
-.oa_avatar {
-    vertical-align: middle;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
 }
 </style>

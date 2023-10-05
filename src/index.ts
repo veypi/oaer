@@ -9,9 +9,7 @@ import './index.css'
 import 'animate.css'
 import '@veypi/msg/index.css'
 import './assets/icon.js'
-
 import OAer from './components/main.vue'
-
 import { Cfg, api } from './api'
 
 export { OAer, Cfg, api }
