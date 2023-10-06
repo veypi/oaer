@@ -14,7 +14,6 @@ export let Cfg = {
   host: ref(''),
   prefix: '/api',
   BaseUrl() {
-    console.log(124)
     return this.host.value + this.prefix
   },
   goto(url: string) {
@@ -24,6 +23,7 @@ export let Cfg = {
     window.location.href = this.host.value + '/#' + url
   },
   userFileUrl() {
+    console.log(this.host.value)
     return (this.host.value || window.location.host) + '/file/'
   },
 }

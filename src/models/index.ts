@@ -6,6 +6,16 @@
 */
 
 
+export interface fileProps {
+  filename: string,
+  basename: string,
+  lastmod: string,
+  size: number,
+  type: "directory" | "file",
+  etag: string
+}
+
+
 export interface modelsApp {
   created: string
   updated: string
