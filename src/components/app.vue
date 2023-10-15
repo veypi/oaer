@@ -6,8 +6,8 @@
     </div>
     <div class="grid grid-cols-5">
       <template v-for="(ap ) of apps">
-        <div class="mx-2" @click="Cfg.goto(ap.redirect || '/')" v-if="ap.id !== Cfg.uuid.value">
-          <Avatar :src="ap.icon" />
+        <div class="mx-2" @click="Cfg.goto(ap.host || '/')" v-if="ap.id !== Cfg.uuid.value">
+          <Avatar :src="Cfg.media(ap.icon)" />
         </div>
       </template>
     </div>

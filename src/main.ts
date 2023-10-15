@@ -7,11 +7,14 @@
  */
 
 
-import { createApp } from 'vue'
-import App from './App.vue'
-import { Cfg } from './index.ts'
-Cfg.host.value = 'http://127.0.0.1:4001'
-Cfg.token.value = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJvbmVkdCIsImF1ZCI6IiIsImV4cCI6MTY5NjgzNzU3NSwiaWF0IjoxNjk2NDkxOTc1LCJpZCI6Ijc5NDAyZDBlY2RiYTQ1ZWFiNTQwNTk0YzZlYjJlM2VjIiwibmlja25hbWUiOiJhZG1pbiIsImljbyI6Ii9tZWRpYS9pY29uL3Vzci8wMDU1LmpwZyIsImFjY2VzcyI6W3sibmFtZSI6ImFwcCIsInJpZCI6bnVsbCwibGV2ZWwiOjV9LHsibmFtZSI6InVzZXIiLCJyaWQiOm51bGwsImxldmVsIjo1fV19.vS7XfCKDT75xOZ1b_UZ7fR24JkZj7dLKL69Kx0Ud2OY'
-Cfg.uuid.value = 'FR9P5t8debxc11aFF'
+// import { createApp } from 'vue'
+// import App from './App.vue'
+// import { set_cfg } from './index.ts'
 
-createApp(App).mount('#app')
+// set_cfg({
+//   host: 'http://127.0.0.1:4001/',
+//   uuid: '816c7591414a450e80d848749cf89b17',
+//   token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJvYSIsImF1ZCI6IiIsImV4cCI6MTY5NzY5MTcxNSwiaWF0IjoxNjk3MzQ2MTE1LCJpZCI6ImVhM2U5YjQ3NTFiMjQwMWU4MGQ0MzY5Nzc4Yjk3YzE4Iiwibmlja25hbWUiOiJ2ZXlwaSIsImljb24iOiIvbWVkaWEvdXNlcl9pY29uL2VhM2U5YjQ3NTFiMjQwMWU4MGQ0MzY5Nzc4Yjk3YzE4LjE2OTcxMjMxMDgzODFNREV4T1M1cWNHYz0uanBnIiwiYWNjZXNzIjpbXX0.q2r2eom3w-UMmcloP5cr0UUeczIrM36ViMR3a_00aUo'
+// })
+
+// createApp(App).mount('#app')

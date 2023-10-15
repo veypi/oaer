@@ -4,7 +4,7 @@
       {{ self.name }}
     </template>
     <div class="flex justify-center items-center">
-      <Avatar :src="usr.icon" />
+      <Avatar :src="Cfg.media(usr.icon)" />
     </div>
     <template #main>
       <div style="height: 100%">
@@ -16,7 +16,7 @@
             </div>
             <div class="grid grid-cols-4 gap-4 h-20">
               <div class="flex items-center justify-center">
-                <Avatar :src="usr.icon" />
+                <Avatar :src="Cfg.media(usr.icon)" />
               </div>
               <div class="col-span-2 text-xs grid grid-cols-1 items-center text-left" style="">
                 <span>昵称: &ensp;&ensp; {{ usr.nickname }}</span>
@@ -54,8 +54,10 @@ import { OneIcon } from '@veypi/one-icon'
 import { computed, onMounted, ref, watch } from 'vue'
 import { decode } from 'js-base64'
 import { api, Cfg } from '../api'
-import { AUStatus, modelsApp, modelsUser } from '../models'
+import { AUStatus, modelsApp, modelsAppUser, modelsUser } from '../models'
 import Avatar from './avatar.vue'
+import bus from '../bus'
+
 
 let shown = ref(false)
 let emits = defineEmits<{
@@ -68,6 +70,7 @@ withDefaults(defineProps<{
   isDark: false,
 })
 onMounted(() => {
+  console.debug('mount oaer')
   fetchUserData()
 })
 
@@ -75,13 +78,14 @@ let usr = ref<modelsUser>({} as modelsUser)
 let ofApps = ref<modelsApp[]>([])
 let self = ref<modelsApp>({} as modelsApp)
 
-let token = computed(() => Cfg.token.value)
-watch(token, () => {
+let token = computed(() => Cfg.oa_token.value)
+watch(token, (t) => {
+  console.debug('oaer token change to :' + t)
   fetchUserData()
 })
 
 function fetchUserData() {
-  let token = Cfg.token.value?.split('.')
+  let token = Cfg.oa_token.value?.split('.')
   if (!token || token.length !== 3) {
     return false
   }
@@ -90,13 +94,13 @@ function fetchUserData() {
     api.user.get(data.id).then(e => {
       usr.value = e
       ofApps.value = []
-      api.app.user('-').list(e.id).then((apps: modelsApp[]) => {
+      api.app.user('-').list(e.id, { app: true }).then((apps: modelsAppUser[]) => {
         for (let v of apps) {
-          if (v.status === AUStatus.OK) {
-            ofApps.value.push(v)
-          }
-          if (v.id === Cfg.uuid.value) {
-            self.value = v
+          if (v.status === AUStatus.OK && v.app) {
+            ofApps.value.push(v.app)
+            if (v.app_id === Cfg.uuid.value) {
+              self.value = v.app
+            }
           }
         }
       })
@@ -114,6 +118,8 @@ const logout = () => {
   shown.value = false
   emits('logout')
 }
+bus.on('logout', logout)
+
 
 
 </script>

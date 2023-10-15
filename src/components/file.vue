@@ -4,7 +4,7 @@
       <span style="">
         我的云盘
       </span>
-      <span @click="Cfg.goto('/file')" class="cursor-pointer" style="color:#f36828">文件中心</span>
+      <span @click="Cfg.goto('/fs')" class="cursor-pointer" style="color:#f36828">文件中心</span>
     </div>
     <div class="">
       {{ usr.used }} KB / {{ usr.space }} GB
@@ -16,10 +16,8 @@
     <div class="flex justify-center">
       <div @click="showModal = true" type="primary">获取挂载链接</div>
     </div>
-    <div class="fixed w-full h-full" v-if="showModal" @click.self="showModal = false">
-      1123123
-
-    </div>
+    <!-- <div class="fixed w-full h-full" v-if="showModal" @click.self="showModal = false"> -->
+    <!-- </div> -->
     <!-- <n-modal v-model:show="showModal"> -->
     <!--   <n-card style="width: 600px;" title="云盘挂载地址" :bordered="false" size="huge"> -->
     <!--     <template #header-extra>复制</template> -->
@@ -44,7 +42,7 @@ withDefaults(defineProps<{
 let rootDir = ref({} as fileProps)
 
 const client = createClient(Cfg.userFileUrl(),
-  { headers: { auth_token: Cfg.token.value as string } })
+  { headers: { auth_token: Cfg.oa_token.value as string } })
 
 onMounted(() => {
   client.stat('/').then((e: any) => {

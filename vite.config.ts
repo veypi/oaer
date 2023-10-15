@@ -7,10 +7,14 @@ import dts from 'vite-plugin-dts'
 import { libInjectCss } from 'vite-plugin-lib-inject-css'
 import path from "path"
 const __dirname = path.resolve()
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue(), libInjectCss(), dts()],
+  resolve: {
+    dedupe: ['vue'],
+  },
+
+
   server: {
     host: '127.0.0.1',
     port: 8082,
@@ -43,6 +47,13 @@ export default defineConfig({
     rollupOptions: {
       // 确保外部化处理那些你不想打包进库的依赖
       external: ["vue"],
+      output: {
+        // Provide global variables to use in the UMD build
+        // for externalized deps
+        globals: {
+          vue: 'Vue',
+        },
+      },
     }, // rollup打包配置
   },
 })

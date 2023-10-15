@@ -26,6 +26,7 @@ export interface modelsApp {
   id: string
   name: string
   redirect: string
+  host: string
   role_id: string
   status: number
   user_count: number
@@ -41,6 +42,8 @@ export enum AUStatus {
 }
 
 export interface modelsAppUser {
+  app?: modelsApp,
+  user?: modelsUser,
   app_id: string
   user_id: string
   status: AUStatus

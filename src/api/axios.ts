@@ -16,71 +16,69 @@ import { Cfg } from '.';
 // for each client)
 
 const proxy = axios.create({
-    withCredentials: true,
-    headers: {
-        'content-type': 'application/json;charset=UTF-8',
-    },
+  withCredentials: true,
+  headers: {
+    'content-type': 'application/json;charset=UTF-8',
+  },
 });
 
 
 // 请求拦截
 const beforeRequest = (config: any) => {
-    // 设置 token
-    const token = Cfg.token.value
-    console.log(token)
-    // NOTE  添加自定义头部
-    token && (config.headers.auth_token = token)
-    // config.headers['auth_token'] = ''
-    return config
+  // 设置 token
+  const token = Cfg.oa_token.value
+  // NOTE  添加自定义头部
+  token && (config.headers.auth_token = token)
+  // config.headers['auth_token'] = ''
+  return config
 }
 proxy.interceptors.request.use(beforeRequest)
 
 // 响应拦截器
 const responseSuccess = (response: AxiosResponse) => {
-    // eslint-disable-next-line yoda
-    // 这里没有必要进行判断，axios 内部已经判断
-    // const isOk = 200 <= response.status && response.status < 300
-    let data = response.data
-    if (response.config.method === 'head') {
-        data = JSON.parse(JSON.stringify(response.headers))
-    }
-    return Promise.resolve(data)
+  // eslint-disable-next-line yoda
+  // 这里没有必要进行判断，axios 内部已经判断
+  // const isOk = 200 <= response.status && response.status < 300
+  let data = response.data
+  if (response.config.method === 'head') {
+    data = JSON.parse(JSON.stringify(response.headers))
+  }
+  return Promise.resolve(data)
 }
 
 const responseFailed = (error: AxiosError) => {
-    const { response } = error
-    if (!window.navigator.onLine) {
+  const { response } = error
+  if (!window.navigator.onLine) {
 
-        alert('没有网络')
-        return Promise.reject(new Error('请检查网络连接'))
-    }
-    console.log(response)
-    return Promise.reject(response?.data || response?.headers.error)
+    alert('没有网络')
+    return Promise.reject(new Error('请检查网络连接'))
+  }
+  return Promise.reject(response?.data || response?.headers.error)
 }
 
 proxy.interceptors.response.use(responseSuccess, responseFailed)
 
 
 const ajax = {
-    get(url: string, data = {}, header?: any) {
-        return proxy.get<any, any>(url, { params: data, headers: header })
-    },
-    head(url: string, data = {}, header?: any) {
-        return proxy.head<any, any>(url, { params: data, headers: header })
-    },
-    delete(url: string, data = {}, header?: any) {
-        return proxy.delete<any, any>(url, { params: data, headers: header })
-    },
+  get(url: string, data = {}, header?: any) {
+    return proxy.get<any, any>(url, { params: data, headers: header })
+  },
+  head(url: string, data = {}, header?: any) {
+    return proxy.head<any, any>(url, { params: data, headers: header })
+  },
+  delete(url: string, data = {}, header?: any) {
+    return proxy.delete<any, any>(url, { params: data, headers: header })
+  },
 
-    post(url: string, data = {}, header?: any) {
-        return proxy.post<any, any>(url, data, { headers: header })
-    },
-    put(url: string, data = {}, header?: any) {
-        return proxy.put<any, any>(url, data, { headers: header })
-    },
-    patch(url: string, data = {}, header?: any) {
-        return proxy.patch<any, any>(url, data, { headers: header })
-    },
+  post(url: string, data = {}, header?: any) {
+    return proxy.post<any, any>(url, data, { headers: header })
+  },
+  put(url: string, data = {}, header?: any) {
+    return proxy.put<any, any>(url, data, { headers: header })
+  },
+  patch(url: string, data = {}, header?: any) {
+    return proxy.patch<any, any>(url, data, { headers: header })
+  },
 }
 
 export default ajax
