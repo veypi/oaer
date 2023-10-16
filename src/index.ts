@@ -10,27 +10,33 @@ import 'animate.css'
 import '@veypi/msg/index.css'
 import './assets/icon.js'
 import OAer from './components/main.vue'
-import { Cfg, api } from './api'
+import { api } from './api'
+import oafs from './libs/oafs'
+import cfg from './cfg'
+import bus from './bus'
+import nats from './nats'
+export type { fileProps } from './libs/oafs'
 
-const set_cfg = (options: { uuid?: string, host?: string, token?: string }) => {
+const set = (options: { uuid?: string, host?: string, token?: string }) => {
   if (options.uuid) {
-    Cfg.uuid.value = options.uuid
+    cfg.uuid.value = options.uuid
   }
   if (options.host) {
     if (options.host.endsWith('/')) {
       options.host = options.host.slice(0, options.host.length - 1)
     }
-    Cfg.host.value = options.host
+    cfg.host.value = options.host
   }
   if (options.token) {
-    Cfg.token.value = options.token
-    if (Cfg.uuid.value === Cfg.self) {
-      Cfg.oa_token.value = options.token
+    cfg.token.value = options.token
+    if (cfg.uuid.value === cfg.self) {
+      cfg.oa_token.value = options.token
+      bus.emit('sync')
     } else {
       api.refresh_token()
     }
   }
 }
 
-export { OAer, set_cfg, api }
-export default { OAer, set_cfg, api }
+export { OAer, api, oafs, nats }
+export default { OAer, set, api, nats }

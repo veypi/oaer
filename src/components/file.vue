@@ -4,7 +4,7 @@
       <span style="">
         我的云盘
       </span>
-      <span @click="Cfg.goto('/fs')" class="cursor-pointer" style="color:#f36828">文件中心</span>
+      <span @click="cfg.goto('/fs')" class="cursor-pointer" style="color:#f36828">文件中心</span>
     </div>
     <div class="">
       {{ usr.used }} KB / {{ usr.space }} GB
@@ -21,7 +21,7 @@
     <!-- <n-modal v-model:show="showModal"> -->
     <!--   <n-card style="width: 600px;" title="云盘挂载地址" :bordered="false" size="huge"> -->
     <!--     <template #header-extra>复制</template> -->
-    <!--     {{ Cfg.userFileUrl() }} -->
+    <!--     {{ cfg.userFileUrl() }} -->
     <!--     <template #footer> 挂载说明</template> -->
     <!--   </n-card> -->
     <!-- </n-modal> -->
@@ -32,7 +32,7 @@
 import { createClient } from 'webdav'
 import { fileProps, modelsUser } from '../models'
 import { onMounted, ref } from 'vue'
-import { Cfg } from '../api'
+import cfg from '../cfg'
 import FsTree from './FsTree.vue'
 
 let showModal = ref(false)
@@ -41,8 +41,8 @@ withDefaults(defineProps<{
 }>(), {})
 let rootDir = ref({} as fileProps)
 
-const client = createClient(Cfg.userFileUrl(),
-  { headers: { auth_token: Cfg.oa_token.value as string } })
+const client = createClient(cfg.userFileUrl(),
+  { headers: { auth_token: cfg.oa_token.value as string } })
 
 onMounted(() => {
   client.stat('/').then((e: any) => {

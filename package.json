@@ -1,14 +1,13 @@
 {
   "name": "@veypi/oaer",
   "author": "veypi",
-  "version": "0.0.3",
-  "main": "dist/oaer.mjs",
-  "types": "dist/index.d.ts",
+  "version": "0.0.4",
+  "main": "src/index.ts",
   "files": [
-    "dist"
+    "src"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "vite -h",
     "build": "vue-tsc && vite build",
     "preview": "vite preview"
   },

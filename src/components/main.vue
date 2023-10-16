@@ -4,7 +4,7 @@
       {{ self.name }}
     </template>
     <div class="flex justify-center items-center">
-      <Avatar :src="Cfg.media(usr.icon)" />
+      <Avatar :src="cfg.media(usr.icon)" />
     </div>
     <template #main>
       <div style="height: 100%">
@@ -12,11 +12,11 @@
           <div class="w-full px-3">
             <div class="h-16 flex justify-between items-center">
               <span style="">我的账户</span>
-              <span @click="Cfg.goto('/user')" class="cursor-pointer" style="color:#f36828">账户中心</span>
+              <span @click="cfg.goto('/user')" class="cursor-pointer" style="color:#f36828">账户中心</span>
             </div>
             <div class="grid grid-cols-4 gap-4 h-20">
               <div class="flex items-center justify-center">
-                <Avatar :src="Cfg.media(usr.icon)" />
+                <Avatar :src="cfg.media(usr.icon)" />
               </div>
               <div class="col-span-2 text-xs grid grid-cols-1 items-center text-left" style="">
                 <span>昵称: &ensp;&ensp; {{ usr.nickname }}</span>
@@ -52,11 +52,13 @@ import Apps from './app.vue'
 import File from './file.vue'
 import { OneIcon } from '@veypi/one-icon'
 import { computed, onMounted, ref, watch } from 'vue'
-import { decode } from 'js-base64'
-import { api, Cfg } from '../api'
+import { api } from '../api'
+import cfg from '../cfg'
 import { AUStatus, modelsApp, modelsAppUser, modelsUser } from '../models'
 import Avatar from './avatar.vue'
 import bus from '../bus'
+import { nats } from '..'
+import msg from '@veypi/msg'
 
 
 let shown = ref(false)
@@ -69,53 +71,49 @@ withDefaults(defineProps<{
 }>(), {
   isDark: false,
 })
+
+watch(computed(() => nats.ready.value), (t) => {
+  if (t) {
+    nats.subscribe('usr.info.*', (e) => {
+      msg.Info(e)
+    })
+  }
+}, { immediate: true })
 onMounted(() => {
   console.debug('mount oaer')
-  fetchUserData()
 })
 
 let usr = ref<modelsUser>({} as modelsUser)
 let ofApps = ref<modelsApp[]>([])
 let self = ref<modelsApp>({} as modelsApp)
 
-let token = computed(() => Cfg.oa_token.value)
-watch(token, (t) => {
-  console.debug('oaer token change to :' + t)
-  fetchUserData()
-})
-
-function fetchUserData() {
-  let token = Cfg.oa_token.value?.split('.')
-  if (!token || token.length !== 3) {
-    return false
-  }
-  let data = JSON.parse(decode(token[1]))
-  if (data.id) {
-    api.user.get(data.id).then(e => {
-      usr.value = e
-      ofApps.value = []
-      api.app.user('-').list(e.id, { app: true }).then((apps: modelsAppUser[]) => {
-        for (let v of apps) {
-          if (v.status === AUStatus.OK && v.app) {
-            ofApps.value.push(v.app)
-            if (v.app_id === Cfg.uuid.value) {
-              self.value = v.app
-            }
+let uid = computed(() => cfg.local_user.value.id)
+watch(uid, (id) => {
+  console.debug('oaer user change to :' + id)
+  if (id) {
+    usr.value = cfg.local_user.value
+    ofApps.value = []
+    api.app.user('-').list(id, { app: true }).then((apps: modelsAppUser[]) => {
+      for (let v of apps) {
+        if (v.status === AUStatus.OK && v.app) {
+          ofApps.value.push(v.app)
+          if (v.app_id === cfg.uuid.value) {
+            self.value = v.app
           }
         }
-      })
-      emits('load', e)
-    }).catch(e => {
-      console.log(e)
-      logout()
+      }
     })
+    emits('load', usr.value)
   } else {
     logout()
   }
-}
+}, { immediate: true })
+
 
 const logout = () => {
   shown.value = false
+  cfg.oa_token.value = ''
+  cfg.token.value = ''
   emits('logout')
 }
 bus.on('logout', logout)

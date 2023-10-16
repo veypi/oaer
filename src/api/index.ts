@@ -6,7 +6,7 @@
 
 import user from './user'
 import app from './app'
-import { Cfg } from './setting'
+import cfg from '../cfg'
 import ajax from './axios'
 import bus from '../bus'
 
@@ -15,9 +15,10 @@ const api = {
   user: user,
   app: app,
   refresh_token: () => {
-    Cfg.oa_token.value = ''
-    ajax.get(Cfg.BaseUrl() + '/app/' + Cfg.self + '/token/', {}, { app_id: Cfg.uuid.value, auth_token: Cfg.token.value }).then(e => {
-      Cfg.oa_token.value = e
+    cfg.oa_token.value = ''
+    ajax.post(cfg.BaseUrl() + '/app/' + cfg.self + '/token/', { app_id: cfg.uuid.value, token: cfg.token.value }).then(e => {
+      cfg.oa_token.value = e
+      bus.emit('sync')
     }).catch(e => {
       console.warn(e)
       bus.emit('logout')
@@ -25,5 +26,5 @@ const api = {
   }
 }
 
-export { api, Cfg }
+export { api }
 export default api

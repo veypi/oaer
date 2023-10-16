@@ -6,10 +6,10 @@
 * @update: 2021-11-17 14:44
 */
 import ajax from './axios'
-import { Cfg } from './setting'
+import cfg from '../cfg'
 
 export default {
-  local: () => Cfg.BaseUrl() + '/app/',
+  local: () => cfg.BaseUrl() + '/app/',
   self() {
     return ajax.get(this.local(), { option: 'oa' })
   },

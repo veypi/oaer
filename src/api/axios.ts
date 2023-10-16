@@ -6,7 +6,7 @@
  */
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { Cfg } from '.';
+import cfg from '../cfg';
 
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
@@ -26,7 +26,7 @@ const proxy = axios.create({
 // 请求拦截
 const beforeRequest = (config: any) => {
   // 设置 token
-  const token = Cfg.oa_token.value
+  const token = cfg.oa_token.value
   // NOTE  添加自定义头部
   token && (config.headers.auth_token = token)
   // config.headers['auth_token'] = ''

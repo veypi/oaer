@@ -9,12 +9,12 @@
 
 import { Base64 } from 'js-base64'
 import ajax from './axios'
-import { Cfg } from './setting'
+import cfg from '../cfg'
 
 
 
 export default {
-  local: () => Cfg.BaseUrl() + '/user/',
+  local: () => cfg.BaseUrl() + '/user/',
   register(username: string, password: string, prop?: any) {
     const data = Object.assign({
       username: username,
