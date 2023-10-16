@@ -21,7 +21,7 @@ const api = {
       bus.emit('sync')
     }).catch(e => {
       console.warn(e)
-      bus.emit('logout')
+      bus.emit('logout', 'get token failed ' + e)
     })
   }
 }

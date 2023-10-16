@@ -10,7 +10,6 @@ import axios from "axios";
 import { Base64 } from 'js-base64'
 import { createClient, WebDAVClient } from 'webdav'
 import cfg from "../cfg";
-import bus from "../bus";
 
 export interface fileProps {
   filename: string,
@@ -26,12 +25,13 @@ let client = {
   app_dav: {} as WebDAVClient,
 }
 
-bus.on('sync', () => {
+
+export const sync = () => {
   client.app_dav = createClient('/file/',
     { headers: { auth_token: cfg.oa_token.value, app_id: cfg.uuid.value } })
   client.dav = createClient('/file/',
     { headers: { auth_token: cfg.oa_token.value } })
-})
+}
 
 const rename = (o: string, n?: string) => {
   let ext = '.' + o.split('.').pop()?.toLowerCase()

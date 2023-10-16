@@ -11,10 +11,11 @@ import '@veypi/msg/index.css'
 import './assets/icon.js'
 import OAer from './components/main.vue'
 import { api } from './api'
-import oafs from './libs/oafs'
+import oafs, { sync as oafs_sync } from './libs/oafs'
 import cfg from './cfg'
 import bus from './bus'
-import nats from './nats'
+import nats, { sync as nats_sync } from './nats'
+import { decode } from 'js-base64'
 export type { fileProps } from './libs/oafs'
 
 const set = (options: { uuid?: string, host?: string, token?: string }) => {
@@ -37,6 +38,28 @@ const set = (options: { uuid?: string, host?: string, token?: string }) => {
     }
   }
 }
+
+bus.on('sync', () => {
+  let token = cfg.oa_token.value?.split('.')
+  if (!token || token.length !== 3) {
+    return false
+  }
+  let data = JSON.parse(decode(token[1]))
+  if (data.id) {
+    cfg.local_user.value = data
+    api.user.get(data.id).then(e => {
+      cfg.local_user.value = e
+      nats_sync()
+      oafs_sync()
+    }).catch(e => {
+      console.warn(e)
+      bus.emit('logout', 'fetch user data failed ' + e)
+    })
+  } else {
+    console.warn('invalid token')
+    bus.emit('logout', 'fetch user data failed.')
+  }
+})
 
 export { OAer, api, oafs, nats }
 export default { OAer, set, api, nats }

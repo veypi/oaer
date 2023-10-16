@@ -8,9 +8,6 @@
 
 import { ref } from 'vue'
 import { modelsApp, modelsUser } from './models'
-import bus from './bus'
-import { api } from '.'
-import { decode } from 'js-base64'
 
 let cfg = {
   self: 'FR9P5t8debxc11aFF',
@@ -53,23 +50,5 @@ let cfg = {
   },
 }
 
-bus.on('sync', () => {
-  let token = cfg.oa_token.value?.split('.')
-  if (!token || token.length !== 3) {
-    return false
-  }
-  let data = JSON.parse(decode(token[1]))
-  if (data.id) {
-    api.user.get(data.id).then(e => {
-      cfg.local_user.value = e
-    }).catch(e => {
-      console.warn(e)
-      bus.emit('logout')
-    })
-  } else {
-    console.warn('invalid token')
-    bus.emit('logout')
-  }
-})
 
 export default cfg

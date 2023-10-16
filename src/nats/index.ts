@@ -22,20 +22,21 @@ let data = {
 
 
 
-bus.on('sync', () => {
+export const sync = () => {
   api.app.get(cfg.uuid.value).then(e => {
     cfg.app_data.value = e
     init()
   })
-})
+}
 
 
 const sc = nats.StringCodec()
 const init = function() {
   (async () => {
+    let name = (cfg.local_user.value.username || cfg.local_user.value.id) + '@' + cfg.app_data.value.name
     data._connect = await nats.connect({
       servers: cfg.NatsHost(),
-      name: cfg.local_user.value.username + '@' + cfg.app_data.value.name,
+      name: name,
       authenticator: (nonce?: string) => {
         return {
           nkey: async function name(nonce) {
@@ -50,9 +51,9 @@ const init = function() {
         }
       },
     } as any)
-    subscribe(`usr.${cfg.local_user.value.id}.logout`, () => {
+    subscribe(`logout.${name}`, () => {
       data.ready.value = false
-      bus.emit('logout')
+      bus.emit('logout', 'from remote call')
       client().close()
     })
     data.ready.value = true

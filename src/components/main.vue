@@ -32,7 +32,7 @@
         </div>
         <hr style="border:none;border-top:2px solid #777;">
         <div style="height: 48px">
-          <div @click="logout"
+          <div @click="logout('manual')"
             class="w-full h-full flex justify-center items-center cursor-pointer transition duration-500 ease-in-out transform hover:scale-125">
             <OneIcon class="inline-block" style="font-size: 24px;">
               logout
@@ -63,7 +63,7 @@ import msg from '@veypi/msg'
 
 let shown = ref(false)
 let emits = defineEmits<{
-  (e: 'logout'): void
+  (e: 'logout', msg?: string): void
   (e: 'load', u: modelsUser): void
 }>()
 withDefaults(defineProps<{
@@ -72,26 +72,22 @@ withDefaults(defineProps<{
   isDark: false,
 })
 
-watch(computed(() => nats.ready.value), (t) => {
-  if (t) {
-    nats.subscribe('usr.info.*', (e) => {
-      msg.Info(e)
-    })
-  }
-}, { immediate: true })
-onMounted(() => {
-  console.debug('mount oaer')
-})
 
-let usr = ref<modelsUser>({} as modelsUser)
+let usr = computed(() => cfg.local_user.value)
 let ofApps = ref<modelsApp[]>([])
 let self = ref<modelsApp>({} as modelsApp)
 
-let uid = computed(() => cfg.local_user.value.id)
-watch(uid, (id) => {
+const logout = (msg?: string) => {
+  shown.value = false
+  cfg.oa_token.value = ''
+  cfg.token.value = ''
+  emits('logout', msg)
+}
+bus.on('logout', (e: any) => { logout(e) })
+
+watch(computed(() => cfg.local_user.value.id), (id) => {
   console.debug('oaer user change to :' + id)
   if (id) {
-    usr.value = cfg.local_user.value
     ofApps.value = []
     api.app.user('-').list(id, { app: true }).then((apps: modelsAppUser[]) => {
       for (let v of apps) {
@@ -104,20 +100,19 @@ watch(uid, (id) => {
       }
     })
     emits('load', usr.value)
-  } else {
-    logout()
   }
 }, { immediate: true })
 
-
-const logout = () => {
-  shown.value = false
-  cfg.oa_token.value = ''
-  cfg.token.value = ''
-  emits('logout')
-}
-bus.on('logout', logout)
-
+watch(computed(() => nats.ready.value), (t) => {
+  if (t) {
+    nats.subscribe('info.' + (usr.value.username || usr.value.id), (e) => {
+      msg.Info(e)
+    })
+  }
+}, { immediate: true })
+onMounted(() => {
+  console.debug('mount oaer')
+})
 
 
 </script>
