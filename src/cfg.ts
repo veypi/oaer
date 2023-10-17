@@ -15,6 +15,7 @@ let cfg = {
   uuid: ref(''),
   app_data: ref<modelsApp>({} as modelsApp),
 
+  ready: ref(false),
   token: ref(''),
   oa_token: ref(''),
   local_user: ref<modelsUser>({} as modelsUser),

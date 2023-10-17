@@ -1,5 +1,5 @@
 <template>
-  <BaseFrame :class="[isDark ? 'oa_light' : 'oa_dark']" v-model="shown" :is-dark="isDark">
+  <BaseFrame v-if="ready" :class="[isDark ? 'oa_light' : 'oa_dark']" v-model="shown" :is-dark="isDark">
     <template #title>
       {{ self.name }}
     </template>
@@ -74,6 +74,7 @@ withDefaults(defineProps<{
 
 
 let usr = computed(() => cfg.local_user.value)
+let ready = computed(() => cfg.ready.value)
 let ofApps = ref<modelsApp[]>([])
 let self = ref<modelsApp>({} as modelsApp)
 
@@ -83,7 +84,9 @@ const logout = (msg?: string) => {
   cfg.token.value = ''
   emits('logout', msg)
 }
-bus.on('logout', (e: any) => { logout(e) })
+bus.on('logout', (e: any) => {
+  logout(e)
+})
 
 watch(computed(() => cfg.local_user.value.id), (id) => {
   console.debug('oaer user change to :' + id)
@@ -111,6 +114,9 @@ watch(computed(() => nats.ready.value), (t) => {
   }
 }, { immediate: true })
 onMounted(() => {
+  if (!ready.value) {
+    api.refresh_token()
+  }
   console.debug('mount oaer')
 })
 

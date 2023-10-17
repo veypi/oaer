@@ -15,10 +15,8 @@ const api = {
   user: user,
   app: app,
   refresh_token: () => {
-    cfg.oa_token.value = ''
     ajax.post(cfg.BaseUrl() + '/app/' + cfg.self + '/token/', { app_id: cfg.uuid.value, token: cfg.token.value }).then(e => {
-      cfg.oa_token.value = e
-      bus.emit('sync')
+      bus.emit('sync', e)
     }).catch(e => {
       console.warn(e)
       bus.emit('logout', 'get token failed ' + e)

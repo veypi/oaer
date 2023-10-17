@@ -31,27 +31,30 @@ const set = (options: { uuid?: string, host?: string, token?: string }) => {
   if (options.token) {
     cfg.token.value = options.token
     if (cfg.uuid.value === cfg.self) {
-      cfg.oa_token.value = options.token
-      bus.emit('sync')
+      bus.emit('sync', options.token)
     } else {
       api.refresh_token()
     }
   }
 }
 
-bus.on('sync', () => {
-  let token = cfg.oa_token.value?.split('.')
+bus.on('sync', (t: any) => {
+  let token = t.split('.')
   if (!token || token.length !== 3) {
     return false
   }
   let data = JSON.parse(decode(token[1]))
   if (data.id) {
+    cfg.oa_token.value = t
     cfg.local_user.value = data
     api.user.get(data.id).then(e => {
+      cfg.ready.value = true
+      cfg.oa_token.value = t
       cfg.local_user.value = e
       nats_sync()
       oafs_sync()
     }).catch(e => {
+      cfg.oa_token.value = ''
       console.warn(e)
       bus.emit('logout', 'fetch user data failed ' + e)
     })
