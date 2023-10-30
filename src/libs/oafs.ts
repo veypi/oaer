@@ -9,6 +9,7 @@
 import axios from "axios";
 import { Base64 } from 'js-base64'
 import { createClient, WebDAVClient } from 'webdav'
+import { ref } from 'vue'
 import cfg from "../cfg";
 
 export interface fileProps {
@@ -22,15 +23,18 @@ export interface fileProps {
 
 let client = {
   dav: {} as WebDAVClient,
+  ready: ref(false),
   app_dav: {} as WebDAVClient,
 }
 
 
 export const sync = () => {
+  console.debug('sync oafs')
   client.app_dav = createClient('/file/',
     { headers: { auth_token: cfg.oa_token.value, app_id: cfg.uuid.value } })
   client.dav = createClient('/file/',
     { headers: { auth_token: cfg.oa_token.value } })
+  client.ready.value = true
 }
 
 const rename = (o: string, n?: string) => {
@@ -92,7 +96,7 @@ const get_dav = (client: WebDAVClient) => {
           client.createDirectory(dir, { recursive: true }).then(() => {
             temp()
           }).catch(e => {
-            console.log(e)
+            console.warn(e)
           })
         })
       });
@@ -110,6 +114,7 @@ const appdav = () => {
 
 
 export default {
+  ready: client.ready,
   get,
   upload,
   dav,

@@ -79,6 +79,7 @@ let ofApps = ref<modelsApp[]>([])
 let self = ref<modelsApp>({} as modelsApp)
 
 const logout = (msg?: string) => {
+  console.debug('logout :' + msg)
   shown.value = false
   cfg.oa_token.value = ''
   cfg.token.value = ''
@@ -114,9 +115,6 @@ watch(computed(() => nats.ready.value), (t) => {
   }
 }, { immediate: true })
 onMounted(() => {
-  if (!ready.value) {
-    api.refresh_token()
-  }
   console.debug('mount oaer')
 })
 

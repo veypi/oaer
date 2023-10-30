@@ -14,6 +14,9 @@ import bus from '../bus'
 const api = {
   user: user,
   app: app,
+  info: () => {
+    return ajax.get(cfg.BaseUrl() + '/info')
+  },
   refresh_token: () => {
     ajax.post(cfg.BaseUrl() + '/app/' + cfg.self + '/token/', { app_id: cfg.uuid.value, token: cfg.token.value }).then(e => {
       bus.emit('sync', e)

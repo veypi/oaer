@@ -6,8 +6,10 @@
     </div>
     <div class="grid grid-cols-5">
       <template v-for="(ap ) of apps">
-        <div class="mx-2" @click="cfg.goto(ap.host || '/')" v-if="ap.id !== cfg.uuid.value">
-          <Avatar :src="cfg.media(ap.icon)" />
+        <div class="mx-2 cursor-pointer" @click="cfg.goto(ap.host || '/')" v-if="ap.id !== cfg.uuid.value">
+          <tooltip :text="ap.name">
+            <Avatar :src="cfg.media(ap.icon)" />
+          </tooltip>
         </div>
       </template>
     </div>
@@ -18,6 +20,7 @@
 import { modelsApp } from '../models'
 import cfg from '../cfg'
 import Avatar from './avatar.vue'
+import tooltip from './tooltip.vue'
 
 withDefaults(defineProps<{
   apps: modelsApp[]

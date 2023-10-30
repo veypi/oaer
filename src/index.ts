@@ -27,6 +27,9 @@ const set = (options: { uuid?: string, host?: string, token?: string }) => {
       options.host = options.host.slice(0, options.host.length - 1)
     }
     cfg.host.value = options.host
+    api.info().then(e => {
+      cfg._host_nats = e.ws_url
+    })
   }
   if (options.token) {
     cfg.token.value = options.token
@@ -45,6 +48,7 @@ bus.on('sync', (t: any) => {
   }
   let data = JSON.parse(decode(token[1]))
   if (data.id) {
+    console.debug('sync oa')
     cfg.oa_token.value = t
     cfg.local_user.value = data
     api.user.get(data.id).then(e => {
@@ -65,4 +69,4 @@ bus.on('sync', (t: any) => {
 })
 
 export { OAer, api, oafs, nats }
-export default { OAer, set, api, nats }
+export default { OAer, set, api, nats, ready: () => oafs.ready.value && nats.ready.value }
