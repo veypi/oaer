@@ -121,5 +121,6 @@ export default {
   publish,
   serve,
   request,
+  sc,
   ready: data.ready,
 }

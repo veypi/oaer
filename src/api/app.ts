@@ -10,14 +10,8 @@ import cfg from '../cfg'
 
 export default {
   local: () => cfg.BaseUrl() + '/app/',
-  self() {
-    return ajax.get(this.local(), { option: 'oa' })
-  },
   getKey(uuid: string) {
     return ajax.get(this.local() + uuid, { option: 'key' })
-  },
-  create(name: string, icon: string) {
-    return ajax.post(this.local(), { name, icon })
   },
   get(uuid: string) {
     return ajax.get(this.local() + uuid)
@@ -25,24 +19,10 @@ export default {
   list() {
     return ajax.get(this.local())
   },
-  update(uuid: string, props: any) {
-    return ajax.patch(this.local() + uuid, props)
-  },
-  user(uuid: string) {
+  users(uuid: string, user_id: string, data?: any) {
     if (uuid === '') {
       uuid = '-'
     }
-    return {
-      local: () => this.local() + uuid + '/user/',
-      list(id: string, data?: any) {
-        return ajax.get(this.local() + id, data)
-      },
-      add(uid: number) {
-        return ajax.post(this.local() + uid)
-      },
-      update(uid: number, status: string) {
-        return ajax.patch(this.local() + uid, { status })
-      },
-    }
+    return ajax.get(this.local() + uuid + '/user/' + user_id, data)
   },
 }

@@ -4,12 +4,14 @@
       <span style="">我的应用</span>
       <span @click="cfg.goto('/')" class="cursor-pointer" style="color:#f36828">应用中心</span>
     </div>
-    <div class="grid grid-cols-5">
+    <div class="flex flex-col bg-gray-200 rounded-xl">
       <template v-for="(ap ) of apps">
-        <div class="mx-2 cursor-pointer" @click="cfg.goto(ap.host || '/')" v-if="ap.id !== cfg.uuid.value">
+        <div class="pl-8 cursor-pointer flex py-2 gap-8  items-center
+          hover:bg-gray-50" @click="cfg.goto(ap.host || '/')" v-if="ap.id !== cfg.uuid.value">
           <tooltip :text="ap.name">
             <Avatar :src="cfg.media(ap.icon)" />
           </tooltip>
+          <div>{{ ap.name }}</div>
         </div>
       </template>
     </div>

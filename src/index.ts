@@ -16,7 +16,7 @@ import cfg from './cfg'
 import bus from './bus'
 import nats, { sync as nats_sync } from './nats'
 import { decode } from 'js-base64'
-export type { fileProps } from './libs/oafs'
+import { ref, watch, computed } from 'vue'
 
 const set = (options: { uuid?: string, host?: string, token?: string }) => {
   if (options.uuid) {
@@ -68,5 +68,29 @@ bus.on('sync', (t: any) => {
   }
 })
 
-export { OAer, api, oafs, nats }
-export default { OAer, set, api, nats, ready: () => oafs.ready.value && nats.ready.value }
+let ready = ref(false)
+watch(computed(() => cfg.ready.value && nats.ready.value), (e) => {
+  console.log('oa ready.')
+  ready.value = e
+})
+
+const drop_fs = () => {
+  return new Promise((resolve, reject) => {
+    let dom = document.getElementById('v_dragging')
+    if (dom === null) {
+      return
+    }
+    let u = dom.getAttribute('vsrc')
+    if (u) {
+      oafs.get(u).then(e => {
+        resolve(e)
+      }).catch(e => {
+        reject(e)
+      })
+    } else {
+      reject('e')
+    }
+  })
+}
+export { OAer, api, oafs, nats, drop_fs }
+export default { OAer, set, api, nats, ready: ready }

@@ -8,7 +8,7 @@
     </div>
     <template #main>
       <div style="height: 100%">
-        <div style="height: calc(100% - 50px)">
+        <div class="overflow-auto" style="height: calc(100% - 50px)">
           <div class="w-full px-3">
             <div class="h-16 flex justify-between items-center">
               <span style="">我的账户</span>
@@ -23,7 +23,7 @@
                 <span>账户: &ensp;&ensp; {{ usr.username }}</span>
                 <span>邮箱: &ensp;&ensp; {{ usr.email }}</span>
               </div>
-              <div class="">123</div>
+              <div class=""></div>
             </div>
             <hr class="mt-10" style="border:none;border-top:1px solid #777;">
           </div>
@@ -51,7 +51,7 @@ import BaseFrame from './frame.vue'
 import Apps from './app.vue'
 import File from './file.vue'
 import { OneIcon } from '@veypi/one-icon'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, provide } from 'vue'
 import { api } from '../api'
 import cfg from '../cfg'
 import { AUStatus, modelsApp, modelsAppUser, modelsUser } from '../models'
@@ -62,6 +62,10 @@ import msg from '@veypi/msg'
 
 
 let shown = ref(false)
+provide('toggle', () => {
+  shown.value = !shown.value
+})
+
 let emits = defineEmits<{
   (e: 'logout', msg?: string): void
   (e: 'load', u: modelsUser): void
@@ -93,7 +97,7 @@ watch(computed(() => cfg.local_user.value.id), (id) => {
   console.debug('oaer user change to :' + id)
   if (id) {
     ofApps.value = []
-    api.app.user('-').list(id, { app: true }).then((apps: modelsAppUser[]) => {
+    api.app.users('-', id, { app: true }).then((apps: modelsAppUser[]) => {
       for (let v of apps) {
         if (v.status === AUStatus.OK && v.app) {
           ofApps.value.push(v.app)
@@ -129,5 +133,10 @@ onMounted(() => {
 .oa_dark {
   color: #333;
 
+}
+
+.oa_top {
+  position: absolute;
+  z-index: 9999;
 }
 </style>

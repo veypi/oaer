@@ -15,6 +15,7 @@ import cfg from '../cfg';
 // "export default () => {}" function below (which runs individually
 // for each client)
 
+axios.defaults.withCredentials = true
 const proxy = axios.create({
   withCredentials: true,
   headers: {

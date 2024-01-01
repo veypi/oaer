@@ -9,11 +9,15 @@ import path from "path"
 const __dirname = path.resolve()
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), libInjectCss(), dts()],
+  plugins: [
+    vue(), libInjectCss(), dts()
+  ],
   resolve: {
     dedupe: ['vue'],
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
   },
-
 
   server: {
     host: '127.0.0.1',

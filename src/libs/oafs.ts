@@ -29,11 +29,11 @@ let client = {
 
 
 export const sync = () => {
-  console.debug('sync oafs')
-  client.app_dav = createClient('/file/',
-    { headers: { auth_token: cfg.oa_token.value, app_id: cfg.uuid.value } })
-  client.dav = createClient('/file/',
-    { headers: { auth_token: cfg.oa_token.value } })
+  console.debug('sync oafs: ' + cfg.userFileUrl())
+  client.app_dav = createClient(cfg.appFileUrl(),
+    { headers: { authorization: "bearer " + cfg.oa_token.value } })
+  client.dav = createClient(cfg.userFileUrl(),
+    { headers: { authorization: "bearer " + cfg.oa_token.value } })
   client.ready.value = true
 }
 
@@ -48,7 +48,7 @@ const rename = (o: string, n?: string) => {
 
 
 const get = (url: string): Promise<string> => {
-  return fetch(url, { headers: { auth_token: cfg.oa_token.value } }).then((response) => response.text())
+  return fetch(cfg.Host() + url, { headers: { authorization: "bearer " + cfg.oa_token.value } }).then((response) => response.text())
 }
 
 // rename 可以保持url不变
@@ -70,12 +70,15 @@ const upload = (f: FileList | File[], dir?: string, renames?: string[]) => {
   })
 }
 
-const get_dav = (client: WebDAVClient) => {
+const get_dav = (client: WebDAVClient, base_url: string) => {
   return {
     client: client,
     stat: client.stat,
     dir: client.getDirectoryContents,
-    upload: (dir: string, name: string, file: any) => {
+    uploadstr: (dir: string, name: string, data: string) => {
+      if (dir.startsWith('/')) {
+        dir = dir.slice(1)
+      }
       return new Promise((resolve, reject) => {
         let temp = () => {
           let reader = new FileReader()
@@ -84,11 +87,11 @@ const get_dav = (client: WebDAVClient) => {
             // let data = new Blob([res])
             client.putFileContents(dir + name, res).then(e => {
               if (e) {
-                resolve('/file' + dir + name)
+                resolve(base_url + dir + name)
               }
             }).catch(reject)
           }
-          reader.readAsArrayBuffer(file)
+          reader.readAsArrayBuffer(new Blob([data], { type: 'plain/text' }))
         }
         client.stat(dir).then(() => {
           temp()
@@ -106,10 +109,10 @@ const get_dav = (client: WebDAVClient) => {
 
 
 const dav = () => {
-  return get_dav(client.dav)
+  return get_dav(client.dav, cfg.userFileUrl())
 }
 const appdav = () => {
-  return get_dav(client.app_dav)
+  return get_dav(client.app_dav, cfg.appFileUrl())
 }
 
 

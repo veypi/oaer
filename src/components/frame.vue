@@ -4,7 +4,8 @@
       <slot>
       </slot>
     </div>
-    <div @click.self="setValue(false)" class="core" style="height: 100vh;width: 100vw;" v-if="props.modelValue">
+    <div @click.self="setValue(false)" class="core" style="height:
+      100vh;width: 100vw;" v-if="props.modelValue">
       <div style="height: 100%; width: 300px" class="core-right">
         <transition appear enter-active-class=" animate__slideInRight">
           <div class="flex right-title animate__animated animate__faster px-3">
@@ -85,6 +86,7 @@ function setValue(b: boolean) {
   width: 100%;
   height: 50px;
   line-height: 50px;
-  background: linear-gradient(90deg, #f74d22, #fa9243);
+  color: #fff;
+  background: linear-gradient(90deg, #6849E1, #b09ef4);
 }
 </style>

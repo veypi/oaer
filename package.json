@@ -1,14 +1,14 @@
 {
   "name": "@veypi/oaer",
   "author": "veypi",
-  "version": "0.0.8",
+  "version": "0.2.0",
   "main": "dist/oaer.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "dev": "vite -h",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },

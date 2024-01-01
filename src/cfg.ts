@@ -20,15 +20,15 @@ let cfg = {
   oa_token: ref(''),
   local_user: ref<modelsUser>({} as modelsUser),
 
-  host: ref('127.0.0.1:4001'),
-  _host_nats: '127.0.0.1:4221',
+  host: ref(''),
+  _host_nats: '',
   nats_pub_key: 'UCXFAAVMCPTATZUZX6H24YF6FI3NKPQBPLM6BNN2EDFPNSUUEZPNFKEL',
   prefix: '/api',
   BaseUrl() {
     return this.host.value + this.prefix
   },
   NatsHost() {
-    if (this._host_nats.startsWith('ws:')) {
+    if (this._host_nats.startsWith('ws')) {
       return this._host_nats
     }
     return 'ws://' + this._host_nats
@@ -46,8 +46,14 @@ let cfg = {
     }
     window.location.href = this.host.value + url
   },
+  Host() {
+    return this.host.value
+  },
   userFileUrl() {
-    return (this.host.value || window.location.host) + '/file/'
+    return (this.host.value || window.location.host) + '/fs/u/'
+  },
+  appFileUrl() {
+    return (this.host.value || window.location.host) + `/fs/a/${this.uuid.value}/`
   },
 }
 

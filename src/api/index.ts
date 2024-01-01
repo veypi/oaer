@@ -9,9 +9,13 @@ import app from './app'
 import cfg from '../cfg'
 import ajax from './axios'
 import bus from '../bus'
+import nats from './nats'
+import tsdb from './tsdb'
 
 
 const api = {
+  nats: nats,
+  tsdb: tsdb,
   user: user,
   app: app,
   info: () => {
